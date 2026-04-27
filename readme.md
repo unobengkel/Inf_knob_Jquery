@@ -4,6 +4,8 @@
 
 Widget knob interaktif berbasis **Canvas API murni** (tanpa library eksternal). Bisa di-drag dengan mouse atau sentuhan jari, mendukung **infinite scroll** saat nilai melewati batas minimum/maksimum.
 
+![Preview](https://github.com/unobengkel/Inf_knob_Jquery/blob/main/preview.PNG) *(Note: Add your own screenshot here)*
+
 ## ✨ Fitur
 
 | Fitur | Deskripsi |
