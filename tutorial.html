@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Tutorial - Knob Widget Integration</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Highlight.js for code highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/javascript.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        pre {
+            border-radius: 0.75rem;
+        }
+
+        .code-section {
+            background: #1e1e1e;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            overflow-x: auto;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 0.5rem;
+            color: white;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .code-container {
+            position: relative;
+        }
+
+        .tab-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            color: #888;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: white;
+            border-bottom-color: #00ffff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-gray-800 border-b border-gray-700 py-8">
+        <div class="max-w-5xl mx-auto px-6">
+            <h1 class="text-3xl font-bold text-cyan-400">Tutorial Integrasi Knob Widget</h1>
+            <p class="mt-2 text-gray-400">Panduan lengkap untuk menyalin dan menggunakan widget knob di project lain</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-gray-800 border-b border-gray-700 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="flex gap-1 overflow-x-auto py-2">
+                <a href="#persiapan" class="px-4 py-2 text-sm hover:text-cyan-400 transition">Persiapan</a>
+                <a href="#struktur" class="px-4 py-2 text-sm hover:text-cyan-400 transition">Struktur File</a>
+                <a href="# instalasi" class="px-4 py-2 text-sm hover:text-cyan-400 transition">Instalasi</a>
+                <a href="#penggunaan" class="px-4 py-2 text-sm hover:text-cyan-400 transition">Penggunaan</a>
+                <a href="#konfigurasi" class="px-4 py-2 text-sm hover:text-cyan-400 transition">Konfigurasi</a>
+                <a href="#contoh" class="px-4 py-2 text-sm hover:text-cyan-400 transition">Contoh</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto px-6 py-12 space-y-16">
+
+        <!-- Section: Persiapan -->
+        <section id="persiapan" class="scroll-mt-24">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center text-sm">1</span>
+                Persiapan
+            </h2>
+            <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+                <h3 class="text-lg font-semibold text-cyan-400 mb-4">File yang perlu disalin</h3>
+                <p class="text-gray-400 mb-4">Berikut adalah file-file yang perlu Anda salin ke project Anda:</p>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-gray-900 p-4 rounded-xl">
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="font-mono text-sm">widget_knob/knob.css</span>
+                        </div>
+                        <p class="text-xs text-gray-500">Stylesheet untuk tampilan widget</p>
+                    </div>
+                    <div class="bg-gray-900 p-4 rounded-xl">
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10 9.414l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="font-mono text-sm">widget_knob/knob.js</span>
+                        </div>
+                        <p class="text-xs text-gray-500">JavaScript modular untuk animasi 3D</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Struktur File -->
+        <section id="struktur" class="scroll-mt-24">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center text-sm">2</span>
+                Struktur File
+            </h2>
+            <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+                <p class="text-gray-400 mb-4">Struktur direktori yang direkomendasikan:</p>
+
+                <div class="bg-gray-900 rounded-xl p-4 font-mono text-sm">
+                    <pre class="text-green-400">project/
+├── <span class="text-cyan-400">asset/</span>
+│   └── <span class="text-cyan-400">widget_knob/</span>
+│       ├── knob.js      <span class="text-gray-500">// Widget JavaScript</span>
+│       └── knob.css     <span class="text-gray-500">// Widget Styles</span>
+├── <span class="text-cyan-400">your-project-files/</span>
+│   ├── main.js
+│   └── main.css
+├── index.html
+└── tutorial.html  <span class="text-gray-500">// Opsional: dokumentasi</span></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Instalasi -->
+        <section id="instalasi" class="scroll-mt-24">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center text-sm">3</span>
+                Instalasi
+            </h2>
+            <div class="space-y-6">
+
+                <!-- Step 1: Include Three.js -->
+                <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-4">Langkah 1: Include Three.js</h3>
+                    <p class="text-gray-400 mb-4">Tambahkan import map untuk Three.js di dalam tag <code>&lt;head&gt;</code>:</p>
+
+                    <div class="code-container">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <div class="code-section">
+                            <pre><code class="language-html">&lt;!-- Import Map untuk Three.js --&gt;
+&lt;script type="importmap"&gt;
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+&lt;/script&gt;</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Include Widget CSS & JS -->
+                <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-4">Langkah 2: Include Widget Files</h3>
+                    <p class="text-gray-400 mb-4">Tambahkan CSS dan JS widget:</p>
+
+                    <div class="code-container">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <div class="code-section">
+                            <pre><code class="language-html">&lt;!-- Widget CSS --&gt;
+&lt;link rel="stylesheet" href="asset/widget_knob/knob.css"&gt;
+
+&lt;!-- Widget JavaScript --&gt;
+&lt;script type="module" src="asset/widget_knob/knob.js"&gt;&lt;/script&gt;</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Section: Penggunaan -->
+        <section id="penggunaan" class="scroll-mt-24">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center text-sm">4</span>
+                Penggunaan Dasar
+            </h2>
+            <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+
+                <!-- HTML Structure -->
+                <h3 class="text-lg font-semibold text-cyan-400 mb-4">1. Buat HTML Container</h3>
+                <div class="code-container mb-6">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div class="code-section">
+                        <pre><code class="language-html">&lt;!-- Container utama harus memiliki class "knob-widget" --&gt;
+&lt;div id="my-knob-container" class="knob-widget knob-panel"&gt;
+    &lt;!-- Output display --&gt;
+    &lt;div class="knob-output-display"&gt;
+        &lt;span id="color-output"&gt;#00FFFF&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                    </div>
+                </div>
+
+                <!-- JavaScript Initialization -->
+                <h3 class="text-lg font-semibold text-cyan-400 mb-4">2. Inisialisasi JavaScript</h3>
+                <div class="code-container">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <div class="code-section">
+                        <pre><code class="language-javascript">// Inisialisasi knob widget
+const knob = KnobWidget.init('#my-knob-container', {
+    defaultTheme: 'gelap',
+    outputCallback: (hexColor, colorObject) => {
+        console.log('Warna dipilih:', hexColor);
+        // Gunakan hexColor untuk keperluan Anda
+        document.getElementById('color-output').textContent = hexColor;
+    }
+});</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Konfigurasi -->
+        <section id="konfigurasi" class="scroll-mt-24">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center text-sm">5</span>
+                Opsi Konfigurasi
+            </h2>
+            <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+
+                <!-- Configuration Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="text-left py-3 px-4 text-cyan-400 font-semibold">Opsi</th>
+                                <th class="text-left py-3 px-4 text-cyan-400 font-semibold">Tipe</th>
+                                <th class="text-left py-3 px-4 text-cyan-400 font-semibold">Default</th>
+                                <th class="text-left py-3 px-4 text-cyan-400 font-semibold">Deskripsi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-300">
+                            <tr class="border-b border-gray-700/50">
+                                <td class="py-3 px-4 font-mono">defaultTheme</td>
+                                <td class="py-3 px-4">string</td>
+                                <td class="py-3 px-4 font-mono text-green-400">'gelap'</td>
+                                <td class="py-3 px-4">Tema default saat inisialisasi</td>
+                            </tr>
+                            <tr class="border-b border-gray-700/50">
+                                <td class="py-3 px-4 font-mono">outputCallback</td>
+                                <td class="py-3 px-4">function</td>
+                                <td class="py-3 px-4 font-mono text-gray-500">null</td>
+                                <td class="py-3 px-4">Callback saat warna berubah</td>
+                            </tr>
+                            <tr class="border-b border-gray-700/50">
+                                <td class="py-3 px-4 font-mono">onThemeChange</td>
+                                <td class="py-3 px-4">function</td>
+                                <td class="py-3 px-4 font-mono text-gray-500">null</td>
+                                <td class="py-3 px-4">Callback saat tema berubah</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 px-4 font-mono">onAngleChange</td>
+                                <td class="py-3 px-4">function</td>
+                                <td class="py-3 px-4 font-mono text-gray-500">null</td>
+                                <td class="py-3 px-4">Callback saat angle berubah</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Available Themes -->
+                <h3 class="text-lg font-semibold text-cyan-400 mt-8 mb-4">Tema yang Tersedia</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-gray-900 p-4 rounded-xl border border-gray-700">
+                        <h4 class="font-semibold text-white mb-2">gelap</h4>
+                        <p class="text-xs text-gray-400">Dark Matte - Tema default dengan efek gelap matte</p>
+                    </div>
+                    <div class="bg-gray-900 p-4 rounded-xl border border-gray-700">
+                        <h4 class="font-semibold text-white mb-2">glow</h4>
+                        <p class="text-xs text-gray-400">Neon Glow - Tema dengan efek neon glow</p>
+                    </div>
+                    <div class="bg-gray-900 p-4 rounded-xl border border-gray-700">
+                        <h4 class="font-semibold text-white mb-2">gloomy</h4>
+                        <p class="text-xs text-gray-400">Titanium - Tema titanium metalik</p>
+                    </div>
+                    <div class="bg-gray-900 p-4 rounded-xl border border-gray-700">
+                        <h4 class="font-semibold text-white mb-2">cerah</h4>
+                        <p class="text-xs text-gray-400">Pure Silver - Tema silver cerah</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Contoh Lengkap -->
+        <section id="contoh" class="scroll-mt-24">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center text-sm">6</span>
+                Contoh Lengkap
+            </h2>
+            <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+
+                <!-- Tab Navigation -->
+                <div class="flex gap-2 mb-6 border-b border-gray-700">
+                    <button class="tab-btn active" onclick="showTab('html-tab')">HTML</button>
+                    <button class="tab-btn" onclick="showTab('js-tab')">JavaScript</button>
+                    <button class="tab-btn" onclick="showTab('css-tab')">CSS Tambahan</button>
+                </div>
+
+                <!-- HTML Tab -->
+                <div id="html-tab" class="tab-content active">
+                    <div class="code-container">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <div class="code-section">
+                            <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="id"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Knob Widget Demo&lt;/title&gt;
+
+    &lt;!-- Import Map untuk Three.js --&gt;
+    &lt;script type="importmap"&gt;
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    &lt;/script&gt;
+
+    &lt;!-- Knob Widget CSS --&gt;
+    &lt;link rel="stylesheet" href="asset/widget_knob/knob.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+    &lt;!-- Knob Container --&gt;
+    &lt;div id="knob-container" class="knob-widget knob-panel" data-theme="gelap"&gt;
+        &lt;div class="knob-output-display knob-text-glow"&gt;
+            &lt;span id="color-output"&gt;#00FFFF&lt;/span&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Knob Widget JS --&gt;
+    &lt;script type="module" src="asset/widget_knob/knob.js"&gt;&lt;/script&gt;
+
+    &lt;!-- Your App JS --&gt;
+    &lt;script type="module"&gt;
+        // Inisialisasi KnobWidget
+        const knob = KnobWidget.init('#knob-container', {
+            defaultTheme: 'gelap',
+            outputCallback: (hexColor) => {
+                document.getElementById('color-output').textContent = hexColor;
+            }
+        });
+
+        // Ganti tema
+        knob.setTheme('glow');
+
+        // Dapatkan nilai (0-360)
+        const value = knob.getValue();
+        console.log('Nilai knob:', value);
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- JS Tab -->
+                <div id="js-tab" class="tab-content">
+                    <div class="code-container">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <div class="code-section">
+                            <pre><code class="language-javascript">// file: your-app.js
+
+// Inisialisasi KnobWidget
+document.addEventListener('DOMContentLoaded', () => {
+    const knob = KnobWidget.init('#knob-container', {
+        defaultTheme: 'gelap',
+
+        // Callback saat warna berubah
+        outputCallback: (hexColor, colorObject) => {
+            // hexColor: '#00FFFF'
+            // colorObject: THREE.Color object
+
+            // Update UI Anda di sini
+            const outputEl = document.getElementById('color-output');
+            if (outputEl) {
+                outputEl.textContent = hexColor;
+                outputEl.style.color = hexColor;
+            }
+
+            // Atau gunakan colorObject untuk keperluan lain
+            console.log(`R: ${colorObject.r}, G: ${colorObject.g}, B: ${colorObject.b}`);
+        },
+
+        // Callback saat tema berubah
+        onThemeChange: (themeName) => {
+            console.log('Tema berubah ke:', themeName);
+        },
+
+        // Callback saat angle berubah
+        onAngleChange: (angle) => {
+            // angle dalam radian
+        }
+    });
+
+    // API untuk mengontrol knob
+    knob.setTheme('glow');           // Ganti tema
+    knob.setCameraLocked(false);     // Bebaskan/ kunci kamera
+    const value = knob.getValue();   // Dapatkan nilai 0-360
+
+    // Mengakses instance yang sudah ada
+    const existingKnob = KnobWidget.getInstance('#knob-container');
+    if (existingKnob) {
+        existingKnob.setTheme('cerah');
+    }
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CSS Tab -->
+                <div id="css-tab" class="tab-content">
+                    <div class="code-container">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <div class="code-section">
+                            <pre><code class="language-css">/* file: your-custom.css */
+
+/* Import widget CSS */
+@import 'asset/widget_knob/knob.css';
+
+/* Custom container sizing */
+#knob-container {
+    width: 400px;
+    height: 500px;
+    border-radius: 2rem;
+}
+
+/* Custom output styling */
+.knob-output-display {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 1rem 2rem;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    #knob-container {
+        width: 100%;
+        height: 400px;
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Reference -->
+        <section id="api" class="scroll-mt-24">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center text-sm">7</span>
+                API Reference
+            </h2>
+            <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700 space-y-6">
+
+                <div>
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-3">KnobWidget.init(container, config)</h3>
+                    <p class="text-gray-400 mb-3">Inisialisasi knob widget baru.</p>
+                    <div class="bg-gray-900 p-4 rounded-xl">
+                        <pre class="text-sm text-green-400">Parameter:
+  container: string | HTMLElement  - Selector atau element
+  config: Object                    - Konfigurasi opsional
+
+Returns: KnobInstance</pre>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-3">KnobInstance.setTheme(themeName)</h3>
+                    <p class="text-gray-400 mb-3">Ganti tema widget.</p>
+                    <div class="bg-gray-900 p-4 rounded-xl">
+                        <pre class="text-sm text-green-400">themeName: 'gelap' | 'glow' | 'gloomy' | 'cerah'</pre>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-3">KnobInstance.getValue()</h3>
+                    <p class="text-gray-400 mb-3">Dapatkan nilai knob (0-360).</p>
+                    <div class="bg-gray-900 p-4 rounded-xl">
+                        <pre class="text-sm text-green-400">Returns: number (0-360)</pre>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-3">KnobInstance.setCameraLocked(locked)</h3>
+                    <p class="text-gray-400 mb-3">Kunci atau bebaskan kamera 3D.</p>
+                    <div class="bg-gray-900 p-4 rounded-xl">
+                        <pre class="text-sm text-green-400">locked: boolean - true untuk kunci, false untuk bebas</pre>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-cyan-400 mb-3">KnobInstance.destroy()</h3>
+                    <p class="text-gray-400 mb-3">Hapus instance dan bersihkan resource.</p>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 border-t border-gray-700 py-8 mt-16">
+        <div class="max-w-5xl mx-auto px-6 text-center text-gray-500 text-sm">
+            <p>Knob Widget - Ultra Premium 3D Color Picker</p>
+            <p class="mt-2">Versi 1.0.0</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize highlight.js
+        hljs.highlightAll();
+
+        // Copy functionality
+        function copyCode(button) {
+            const codeBlock = button.parentElement.querySelector('code');
+            const text = codeBlock.textContent;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = 'rgba(0, 255, 255, 0.3)';
+
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '';
+                }, 2000);
+            });
+        }
+
+        // Tab switching
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

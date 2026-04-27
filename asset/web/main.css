@@ -1,0 +1,307 @@
+/* ============================================================
+   main.css - Halaman demo Infinite Knob
+   ============================================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(145deg, #f0f2f5 0%, #e2e6eb 100%);
+    color: #333;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    font-size: 0.95rem;
+    color: #718096;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+/* Container demo */
+.demo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Wrapper knob - responsive menggunakan aspect-ratio via CSS */
+.knob-wrap {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Panel kontrol */
+.controls-panel {
+    width: 100%;
+    max-width: 400px;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0,0,0,0.04);
+}
+
+.controls-panel label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 8px;
+}
+
+.slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.slider-row input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+.slider-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #00a644;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.slider-row input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #00a644;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.slider-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2d3748;
+    min-width: 45px;
+    text-align: right;
+}
+
+/* Button group */
+.button-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.button-group button {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #fff;
+}
+
+.button-group button:active {
+    transform: scale(0.96);
+}
+
+.btn-start {
+    background: linear-gradient(135deg, #00a644, #00c853);
+}
+
+.btn-stop {
+    background: linear-gradient(135deg, #ef6100, #ff7b1e);
+}
+
+.btn-reset {
+    background: linear-gradient(135deg, #718096, #a0aec0);
+    color: #fff;
+}
+
+/* Info */
+.status-info {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #718096;
+    margin-top: 14px;
+    padding: 10px;
+    background: #f7fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-info .highlight {
+    font-weight: 700;
+    color: #2d3748;
+}
+
+/* Range info */
+.range-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: #f7fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.8rem;
+}
+
+.range-info .label {
+    color: #718096;
+    font-weight: 500;
+}
+
+.range-info .value {
+    font-weight: 700;
+    color: #2d3748;
+    font-family: 'Courier New', monospace;
+}
+
+/* Deskripsi */
+.description {
+    max-width: 500px;
+    text-align: center;
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.85rem;
+    color: #4a5568;
+    line-height: 1.6;
+}
+
+.description code {
+    background: #edf2f7;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #2b6cb0;
+}
+
+/* Footer */
+footer {
+    margin-top: 30px;
+    font-size: 0.8rem;
+    color: #a0aec0;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+/* Mobile (HP) - < 480px */
+@media (max-width: 480px) {
+    body {
+        padding: 12px;
+    }
+
+    h1 {
+        font-size: 1.4rem;
+    }
+
+    .subtitle {
+        font-size: 0.8rem;
+        margin-bottom: 16px;
+    }
+
+    .controls-panel {
+        padding: 14px;
+        border-radius: 12px;
+    }
+
+    .button-group button {
+        font-size: 0.8rem;
+        padding: 8px 12px;
+        min-width: 70px;
+    }
+
+    .status-info {
+        font-size: 0.78rem;
+        padding: 8px;
+    }
+
+    .range-info {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+
+    .description {
+        font-size: 0.8rem;
+        padding: 12px 14px;
+        margin-top: 16px;
+    }
+}
+
+/* Tablet - 481px - 1024px */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .knob-wrap {
+        max-width: 350px;
+    }
+
+    .controls-panel {
+        max-width: 350px;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+}
+
+/* Desktop - > 1024px */
+@media (min-width: 1025px) {
+    .knob-wrap {
+        max-width: 420px;
+    }
+
+    .controls-panel {
+        max-width: 420px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+}

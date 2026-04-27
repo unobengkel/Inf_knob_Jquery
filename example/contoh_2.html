@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contoh 2 - Multiple Knobs Control</title>
+
+    <!-- Import Map untuk Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <!-- Knob Widget CSS -->
+    <link rel="stylesheet" href="../asset/widget_knob/knob.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .container {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .knob-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 2rem;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .knob-card h3 {
+            margin: 0 0 1rem 0;
+            font-size: 0.875rem;
+            letter-spacing: 0.2em;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .knob-label {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 0.75rem;
+            display: inline-block;
+        }
+
+        /* Knob container styling */
+        .knob-wrapper {
+            width: 280px;
+            height: 320px;
+        }
+
+        /* Color preview circle */
+        .color-mix-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 2rem auto;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .mix-label {
+            text-align: center;
+            color: #666;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .theme-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .theme-btn.active {
+            background: rgba(0, 255, 255, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Card 1: Hue Selection -->
+        <div class="knob-card">
+            <h3>1. Hue Selection</h3>
+            <div id="hue-container" class="knob-wrapper knob-widget knob-panel" data-theme="gelap"></div>
+            <div class="knob-label" id="hue-output">#00FFFF</div>
+        </div>
+
+        <!-- Card 2: Saturation -->
+        <div class="knob-card">
+            <h3>2. Saturation</h3>
+            <div id="saturation-container" class="knob-wrapper knob-widget knob-panel" data-theme="gelap"></div>
+            <div class="knob-label" id="saturation-output">100%</div>
+        </div>
+
+        <!-- Card 3: Brightness -->
+        <div class="knob-card">
+            <h3>3. Brightness</h3>
+            <div id="brightness-container" class="knob-wrapper knob-widget knob-panel" data-theme="gelap"></div>
+            <div class="knob-label" id="brightness-output">50%</div>
+        </div>
+    </div>
+
+    <!-- Color Mix Preview -->
+    <div class="mix-label">Preview Warna Campuran</div>
+    <div class="color-mix-preview" id="mix-preview"></div>
+
+    <!-- Theme Controls -->
+    <div class="controls-panel">
+        <button class="theme-btn active" data-theme="gelap">Dark Matte</button>
+        <button class="theme-btn" data-theme="glow">Neon Glow</button>
+        <button class="theme-btn" data-theme="gloomy">Titanium</button>
+        <button class="theme-btn" data-theme="cerah">Pure Silver</button>
+    </div>
+
+    <!-- Knob Widget JS -->
+    <script type="module" src="../asset/widget_knob/knob.js"></script>
+
+    <!-- Example Script -->
+    <script type="module">
+        // State untuk menyimpan nilai
+        let currentHue = 0;
+        let currentSaturation = 1.0;
+        let currentBrightness = 0.5;
+
+        // Inisialisasi KnobWidget untuk Hue
+        const hueKnob = KnobWidget.init('#hue-container', {
+            defaultTheme: 'gelap',
+            outputCallback: (hexColor, colorObject) => {
+                currentHue = colorObject.h;
+                document.getElementById('hue-output').textContent = hexColor;
+                updateMixedColor();
+            }
+        });
+
+        // Inisialisasi KnobWidget untuk Saturation (menggunakan callback untuk kontrol manual)
+        const satKnob = KnobWidget.init('#saturation-container', {
+            defaultTheme: 'gelap',
+            outputCallback: (hexColor, colorObject) => {
+                // Map 0-360 ke 0-100%
+                currentSaturation = colorObject.s;
+                document.getElementById('saturation-output').textContent = Math.round(currentSaturation * 100) + '%';
+                updateMixedColor();
+            },
+            onAngleChange: (angle) => {
+                // Konversi angle ke saturation (0-1)
+                const normalizedAngle = (angle + Math.PI) / (Math.PI * 2);
+                currentSaturation = Math.max(0, Math.min(1, normalizedAngle));
+                document.getElementById('saturation-output').textContent = Math.round(currentSaturation * 100) + '%';
+            }
+        });
+
+        // Inisialisasi KnobWidget untuk Brightness
+        const briKnob = KnobWidget.init('#brightness-container', {
+            defaultTheme: 'gelap',
+            outputCallback: (hexColor, colorObject) => {
+                currentBrightness = colorObject.l;
+                document.getElementById('brightness-output').textContent = Math.round(currentBrightness * 100) + '%';
+                updateMixedColor();
+            },
+            onAngleChange: (angle) => {
+                // Konversi angle ke lightness (0-1)
+                const normalizedAngle = (angle + Math.PI) / (Math.PI * 2);
+                currentBrightness = Math.max(0.1, Math.min(0.9, normalizedAngle));
+                document.getElementById('brightness-output').textContent = Math.round(currentBrightness * 100) + '%';
+            }
+        });
+
+        // Fungsi untuk update warna campuran
+        function updateMixedColor() {
+            const mixedColor = new THREE.Color();
+            mixedColor.setHSL(currentHue, currentSaturation, currentBrightness);
+            const hexColor = '#' + mixedColor.getHexString().toUpperCase();
+
+            const preview = document.getElementById('mix-preview');
+            preview.style.backgroundColor = hexColor;
+            preview.style.boxShadow = `0 10px 40px ${hexColor}50`;
+        }
+
+        // Theme switching
+        const themeButtons = document.querySelectorAll('.theme-btn');
+        themeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const theme = btn.dataset.theme;
+
+                // Update active state
+                themeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Apply theme to all knobs
+                hueKnob.setTheme(theme);
+                satKnob.setTheme(theme);
+                briKnob.setTheme(theme);
+            });
+        });
+
+        // Inisialisasi warna campuran
+        updateMixedColor();
+    </script>
+</body>
+</html>

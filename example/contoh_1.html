@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contoh 1 - Color Picker Sederhana</title>
+
+    <!-- Import Map untuk Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <!-- Knob Widget CSS -->
+    <link rel="stylesheet" href="../asset/widget_knob/knob.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.5s ease;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .color-preview {
+            width: 200px;
+            height: 200px;
+            border-radius: 1.5rem;
+            margin: 2rem auto;
+            background: #00ffff;
+            transition: all 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3);
+        }
+
+        .color-output {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 1rem;
+        }
+
+        .label {
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Knob container styling */
+        #knob-container {
+            width: 350px;
+            height: 400px;
+            border-radius: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="label">Putar knob untuk memilih warna</div>
+
+        <div class="color-preview" id="color-preview"></div>
+
+        <div class="color-output" id="color-output">#00FFFF</div>
+
+        <!-- Knob Container -->
+        <div id="knob-container" class="knob-widget knob-panel" data-theme="gelap"></div>
+    </div>
+
+    <!-- Knob Widget JS -->
+    <script type="module" src="../asset/widget_knob/knob.js"></script>
+
+    <!-- Example Script -->
+    <script type="module">
+        // Inisialisasi KnobWidget untuk Color Picker
+        const knob = KnobWidget.init('#knob-container', {
+            defaultTheme: 'gelap',
+            outputCallback: (hexColor, colorObject) => {
+                // Update color preview
+                const preview = document.getElementById('color-preview');
+                const output = document.getElementById('color-output');
+
+                preview.style.backgroundColor = hexColor;
+                preview.style.boxShadow = `0 20px 60px ${hexColor}40`;
+                output.textContent = hexColor;
+
+                // Update body background
+                document.body.style.backgroundColor = `${hexColor}15`;
+            }
+        });
+
+        // Set tema awal
+        knob.setTheme('gelap');
+    </script>
+</body>
+</html>

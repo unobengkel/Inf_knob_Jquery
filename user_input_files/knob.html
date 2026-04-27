@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Ultra Premium 3D Color Knob - Saved View</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Import Map untuk Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    
+    <style>
+        :root {
+            --glow-color: rgba(0, 255, 255, 0.3);
+            /* Tema Gelap (Default) */
+            --bg-color: #030305;
+            --panel-bg: rgba(15, 15, 18, 0.6);
+            --panel-border: rgba(255, 255, 255, 0.05);
+            --panel-border-top: rgba(255, 255, 255, 0.15);
+            --text-main: #ffffff;
+            --text-sub: #8892b0;
+            --output-bg: rgba(0, 0, 0, 0.6);
+            --shadow-base: rgba(0,0,0,0.8);
+            --bg-pattern: radial-gradient(circle at 50% 0%, #151520 0%, transparent 60%);
+        }
+
+        body[data-theme="glow"] {
+            --bg-color: #050505;
+            --panel-bg: rgba(20, 20, 25, 0.7);
+            --bg-pattern: 
+                radial-gradient(circle at 50% 0%, #1a1a24 0%, transparent 50%),
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+        }
+
+        body[data-theme="gloomy"] {
+            --bg-color: #16181c;
+            --panel-bg: rgba(30, 32, 38, 0.6);
+            --text-main: #c9cdd6;
+            --text-sub: #6b7280;
+            --shadow-base: rgba(0,0,0,0.5);
+            --bg-pattern: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.02) 0%, transparent 70%);
+        }
+
+        body[data-theme="cerah"] {
+            --bg-color: #e2e8f0;
+            --panel-bg: rgba(255, 255, 255, 0.7);
+            --panel-border: rgba(0, 0, 0, 0.08);
+            --panel-border-top: rgba(255, 255, 255, 1);
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --output-bg: rgba(241, 245, 249, 0.9);
+            --shadow-base: rgba(0,0,0,0.1);
+            --bg-pattern: radial-gradient(circle at 50% 0%, #ffffff 0%, transparent 60%);
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            background-image: var(--bg-pattern);
+            background-size: 100% 100%, 30px 30px, 30px 30px;
+            background-position: center center;
+            touch-action: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.8s ease, background-image 0.8s ease;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .vvip-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--panel-border);
+            border-top: 1px solid var(--panel-border-top);
+            box-shadow: 
+                0 40px 80px var(--shadow-base),
+                0 0 60px var(--glow-color),
+                inset 0 1px 0 var(--panel-border-top);
+            transition: all 0.8s ease;
+        }
+
+        body.camera-unlocked .ui-element {
+            opacity: 0.3;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        body.camera-unlocked .vvip-panel {
+            box-shadow: 0 40px 80px var(--shadow-base), inset 0 1px 0 var(--panel-border-top);
+        }
+
+        .vvip-text-glow {
+            text-shadow: 0 0 20px var(--glow-color);
+            transition: text-shadow 0.3s ease, color 0.3s ease;
+        }
+        body[data-theme="cerah"] .vvip-text-glow {
+             text-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+
+        .vvip-output-box {
+            background: var(--output-bg);
+            border: 1px solid var(--panel-border);
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.15);
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.8s ease;
+        }
+
+        .top-btn {
+            position: absolute;
+            top: 1.5rem;
+            z-index: 30;
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: var(--text-sub);
+            opacity: 0.6;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .top-btn:hover { opacity: 1; color: var(--text-main); transform: scale(1.1); }
+        
+        .btn-theme { right: 1.5rem; }
+        .btn-lock { left: 1.5rem; }
+        .btn-theme:hover { transform: rotate(45deg) scale(1.1); }
+
+        #toast {
+            position: absolute;
+            top: 4rem;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 40;
+            pointer-events: none;
+        }
+        #toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #theme-modal {
+            position: absolute;
+            inset: 0;
+            z-index: 50;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.95);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #theme-modal.active { opacity: 1; pointer-events: auto; transform: scale(1); }
+
+        .theme-option {
+            width: 70%;
+            padding: 1rem;
+            margin: 0.4rem 0;
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #d1d5db;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+        .theme-option:hover { background: rgba(255, 255, 255, 0.15); transform: translateY(-2px); }
+        .theme-option.selected {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.8);
+            color: #ffffff;
+            font-weight: 700;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+        .close-modal {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        .close-modal:hover { opacity: 1; }
+
+        .text-dynamic-main { color: var(--text-main); transition: color 0.8s ease; }
+        .text-dynamic-sub { color: var(--text-sub); transition: color 0.8s ease; }
+    </style>
+</head>
+<body data-theme="gelap">
+
+    <div id="main-panel" class="relative w-[24rem] h-[36rem] sm:w-[26rem] vvip-panel rounded-[2.5rem] flex flex-col items-center p-8 overflow-hidden">
+        
+        <button id="btn-toggle-camera" class="top-btn btn-lock" title="Kunci/Bebaskan Kamera">
+            <svg id="icon-lock" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <svg id="icon-unlock" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+            </svg>
+        </button>
+
+        <button id="btn-open-theme" class="top-btn btn-theme ui-element" title="Tema">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+        </button>
+
+        <div id="toast">Mode Navigasi 3D</div>
+
+        <div class="z-20 text-center mt-4 w-full pointer-events-none ui-element transition-opacity">
+            <h2 class="text-[0.65rem] font-medium tracking-[0.5em] text-dynamic-sub uppercase mb-3">Master Control</h2>
+            <h1 class="text-3xl font-extrabold tracking-widest text-dynamic-main">
+                CHROMA
+            </h1>
+        </div>
+
+        <div id="canvas-container"></div>
+        
+        <div class="z-20 mt-auto mb-4 w-full px-4 flex justify-between items-center pointer-events-none ui-element transition-opacity">
+            <div class="flex flex-col">
+                <span class="text-[0.6rem] font-bold tracking-[0.2em] text-dynamic-sub uppercase mb-1">Color Profile</span>
+                <span class="text-xs text-dynamic-sub opacity-70 font-light">Radial HSL</span>
+            </div>
+            
+            <div class="vvip-output-box px-6 py-3 rounded-2xl flex items-center justify-center min-w-[130px]">
+                <span id="output-hex" class="text-xl font-bold tracking-widest vvip-text-glow">#00FFFF</span>
+            </div>
+        </div>
+
+        <div id="theme-modal">
+            <button id="btn-close-theme" class="close-modal">&times;</button>
+            <h3 class="text-white text-xs font-bold tracking-widest uppercase mb-8 opacity-70">Aesthetics</h3>
+            
+            <button class="theme-option selected" data-theme-value="gelap">Dark Matte</button>
+            <button class="theme-option" data-theme-value="glow">Neon Glow</button>
+            <button class="theme-option" data-theme-value="gloomy">Titanium</button>
+            <button class="theme-option" data-theme-value="cerah">Pure Silver</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        const btnOpenTheme = document.getElementById('btn-open-theme');
+        const btnCloseTheme = document.getElementById('btn-close-theme');
+        const themeModal = document.getElementById('theme-modal');
+        const themeButtons = document.querySelectorAll('.theme-option');
+        const btnToggleCamera = document.getElementById('btn-toggle-camera');
+        const iconLock = document.getElementById('icon-lock');
+        const iconUnlock = document.getElementById('icon-unlock');
+        const toast = document.getElementById('toast');
+        
+        let currentTheme = 'gelap';
+        let isCameraLocked = true; 
+
+        let toastTimeout;
+        function showToast(message) {
+            toast.innerText = message;
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // --- SETUP 3D ---
+        const container = document.getElementById('canvas-container');
+        const outputHex = document.getElementById('output-hex');
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.0; 
+        container.appendChild(renderer.domElement);
+
+        // --- ORBIT CONTROLS ---
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.enabled = false; 
+        controls.maxDistance = 15; 
+        controls.minDistance = 3;  
+        controls.maxPolarAngle = Math.PI / 1.8; 
+
+        // --- PENYIMPANAN KE LOCAL STORAGE ---
+        function saveCameraPosition() {
+            try {
+                localStorage.setItem('knobCameraPos', JSON.stringify(camera.position));
+                localStorage.setItem('knobCameraTarget', JSON.stringify(controls.target));
+            } catch (e) {
+                console.warn("Local storage tidak tersedia.");
+            }
+        }
+
+        function loadCameraPosition() {
+            try {
+                const savedCamera = localStorage.getItem('knobCameraPos');
+                const savedTarget = localStorage.getItem('knobCameraTarget');
+
+                if (savedCamera && savedTarget) {
+                    const pos = JSON.parse(savedCamera);
+                    const tgt = JSON.parse(savedTarget);
+                    camera.position.set(pos.x, pos.y, pos.z);
+                    controls.target.set(tgt.x, tgt.y, tgt.z);
+                    return true;
+                }
+            } catch (e) {
+                console.warn("Gagal membaca dari local storage.");
+            }
+            return false;
+        }
+
+        // Muat posisi saat halaman dibuka
+        if (!loadCameraPosition()) {
+            // Posisi Default jika belum ada penyimpanan
+            camera.position.set(0, -6, 8); 
+            controls.target.set(0, 0, 0);
+        }
+        controls.update();
+
+        // Simpan posisi setiap kali pengguna selesai menggeser/zoom kamera
+        controls.addEventListener('end', saveCameraPosition);
+
+        // --- FUNGSI TOGGLE LOCK (TIDAK ADA RESET POSISI) ---
+        btnToggleCamera.addEventListener('click', () => {
+            isCameraLocked = !isCameraLocked;
+            controls.enabled = !isCameraLocked; 
+
+            if (isCameraLocked) {
+                // Kamera Terkunci di tempatnya saat ini (tetap)
+                iconLock.style.display = 'block';
+                iconUnlock.style.display = 'none';
+                document.body.classList.remove('camera-unlocked');
+                showToast("Kamera Terkunci: Mode Edit Warna");
+            } else {
+                // Kamera Bebas
+                iconLock.style.display = 'none';
+                iconUnlock.style.display = 'block';
+                document.body.classList.add('camera-unlocked');
+                showToast("Mode Navigasi 3D (Putar, Geser, Zoom)");
+            }
+        });
+
+        // --- PENCAHAYAAN ---
+        const pmremGenerator = new THREE.PMREMGenerator(renderer);
+        let currentEnvMap = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+        scene.environment = currentEnvMap;
+        scene.environmentIntensity = 0.8; 
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); 
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 2.0);
+        dirLight.position.set(-2, 5, 5);
+        scene.add(dirLight);
+
+        const ledPointLight = new THREE.PointLight(0x00ffff, 2.0, 3);
+        ledPointLight.position.set(0, 0, 1.2); 
+        scene.add(ledPointLight);
+
+        // --- PEMBUATAN KNOB ---
+        const knobGroup = new THREE.Group();
+        knobGroup.position.y = -0.3; 
+        scene.add(knobGroup);
+
+        const bodyMaterial = new THREE.MeshPhysicalMaterial({
+            color: 0x111111, metalness: 0.9, roughness: 0.25, clearcoat: 0.3, clearcoatRoughness: 0.1
+        });
+        const accentMaterial = new THREE.MeshPhysicalMaterial({
+            color: 0x050505, metalness: 1.0, roughness: 0.1, 
+        });
+
+        const baseGeo = new THREE.CylinderGeometry(2.4, 2.5, 0.2, 128);
+        baseGeo.rotateX(Math.PI / 2);
+        const baseMesh = new THREE.Mesh(baseGeo, bodyMaterial);
+        baseMesh.position.z = -0.2;
+        scene.add(baseMesh);
+
+        const baseRingGeo = new THREE.TorusGeometry(2.4, 0.03, 32, 128);
+        const baseRingMesh = new THREE.Mesh(baseRingGeo, accentMaterial);
+        baseRingMesh.position.z = -0.1;
+        scene.add(baseRingMesh);
+
+        const points = [];
+        points.push(new THREE.Vector2(0, 0), new THREE.Vector2(2.3, 0), new THREE.Vector2(2.3, 0.8));
+        points.push(new THREE.Vector2(2.2, 0.95), new THREE.Vector2(2.0, 1.0), new THREE.Vector2(0, 0.96)); 
+        const latheGeo = new THREE.LatheGeometry(points, 128); 
+        latheGeo.rotateX(Math.PI / 2); 
+        const mainKnobMesh = new THREE.Mesh(latheGeo, bodyMaterial);
+        knobGroup.add(mainKnobMesh);
+
+        const emissiveMat = new THREE.MeshStandardMaterial({
+            color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 3.0, roughness: 0.2, metalness: 0.1
+        });
+
+        const lightRingGeo = new THREE.TorusGeometry(2.1, 0.015, 16, 128);
+        const lightRingMesh = new THREE.Mesh(lightRingGeo, emissiveMat);
+        lightRingMesh.position.z = 0.97;
+        knobGroup.add(lightRingMesh);
+
+        const indicatorGeo = new THREE.CapsuleGeometry(0.06, 0.6, 16, 32);
+        const indicatorMesh = new THREE.Mesh(indicatorGeo, emissiveMat);
+        indicatorMesh.position.set(0, 1.6, 0.98); 
+        knobGroup.add(indicatorMesh);
+
+        // --- LOGIKA TEMA ---
+        btnOpenTheme.addEventListener('click', () => themeModal.classList.add('active'));
+        btnCloseTheme.addEventListener('click', () => themeModal.classList.remove('active'));
+
+        function applyTheme(themeName) {
+            currentTheme = themeName;
+            document.body.setAttribute('data-theme', themeName);
+            themeButtons.forEach(btn => {
+                if(btn.dataset.themeValue === themeName) btn.classList.add('selected');
+                else btn.classList.remove('selected');
+            });
+
+            if (themeName === 'gelap') {
+                renderer.toneMappingExposure = 1.0; scene.environmentIntensity = 0.6; 
+                ambientLight.intensity = 0.5; dirLight.intensity = 2.0;
+                bodyMaterial.color.setHex(0x111111); bodyMaterial.roughness = 0.3; accentMaterial.color.setHex(0x050505);
+            } 
+            else if (themeName === 'glow') {
+                renderer.toneMappingExposure = 1.1; scene.environmentIntensity = 0.8; 
+                ambientLight.intensity = 0.6; dirLight.intensity = 2.5;
+                bodyMaterial.color.setHex(0x1a1a20); bodyMaterial.roughness = 0.2; accentMaterial.color.setHex(0x111111);
+            }
+            else if (themeName === 'gloomy') {
+                renderer.toneMappingExposure = 0.9; scene.environmentIntensity = 0.5;
+                ambientLight.intensity = 0.8; dirLight.intensity = 1.5;
+                bodyMaterial.color.setHex(0x3a3d42); bodyMaterial.roughness = 0.45; accentMaterial.color.setHex(0x1e2024);
+            }
+            else if (themeName === 'cerah') {
+                renderer.toneMappingExposure = 1.1; scene.environmentIntensity = 1.2; 
+                ambientLight.intensity = 1.5; dirLight.intensity = 3.0;
+                bodyMaterial.color.setHex(0xdddddd); bodyMaterial.roughness = 0.15; accentMaterial.color.setHex(0x999999);
+            }
+
+            updateColorFromAngle(targetAngle);
+            setTimeout(() => themeModal.classList.remove('active'), 200);
+        }
+
+        themeButtons.forEach(btn => btn.addEventListener('click', (e) => applyTheme(e.target.dataset.themeValue)));
+
+        // --- LOGIKA INTERAKSI WARNA ---
+        let isDragging = false;
+        let currentAngle = 0;
+        let targetAngle = 0;
+        
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        
+        const planeGeo = new THREE.PlaneGeometry(100, 100);
+        const planeMat = new THREE.MeshBasicMaterial({ visible: false });
+        const interactionPlane = new THREE.Mesh(planeGeo, planeMat);
+        scene.add(interactionPlane);
+
+        function updateColorFromAngle(angle) {
+            let normalizedAngle = (angle + Math.PI) / (Math.PI * 2);
+            let hue = (1.0 - normalizedAngle) % 1.0; 
+
+            let s = 1.0, l = 0.5; 
+            if(currentTheme === 'gloomy') { s = 0.7; l = 0.6; } 
+            if(currentTheme === 'cerah') { l = 0.45; } 
+
+            const baseColor = new THREE.Color().setHSL(hue, s, l);
+            const hexColor = '#' + baseColor.getHexString().toUpperCase();
+            
+            let cssAlpha = currentTheme === 'cerah' ? 0.15 : (currentTheme === 'gelap' ? 0.25 : 0.35);
+            const cssGlowColor = `rgba(${baseColor.r*255}, ${baseColor.g*255}, ${baseColor.b*255}, ${cssAlpha})`;
+            
+            if (currentTheme === 'cerah') {
+                const pureColor = new THREE.Color().setHSL(hue, 1.0, 0.5);
+                emissiveMat.color.copy(pureColor); emissiveMat.emissive.copy(pureColor);
+            } else {
+                emissiveMat.color.copy(baseColor); emissiveMat.emissive.copy(baseColor);
+            }
+            
+            ledPointLight.color.copy(baseColor);
+
+            document.documentElement.style.setProperty('--glow-color', cssGlowColor);
+            outputHex.innerText = hexColor;
+            outputHex.style.color = hexColor;
+        }
+
+        function handlePointer(event) {
+            if (!isCameraLocked || !isDragging) return;
+
+            let clientX = event.changedTouches ? event.changedTouches[0].clientX : event.clientX;
+            let clientY = event.changedTouches ? event.changedTouches[0].clientY : event.clientY;
+            
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObject(interactionPlane);
+
+            if (intersects.length > 0) {
+                const intersectPoint = intersects[0].point;
+                targetAngle = Math.atan2(intersectPoint.y, intersectPoint.x) - Math.PI / 2;
+                updateColorFromAngle(targetAngle);
+            }
+        }
+
+        container.addEventListener('pointerdown', (e) => {
+            if(e.target.closest('.top-btn') || e.target.closest('#theme-modal')) return;
+            
+            if(isCameraLocked) {
+                isDragging = true;
+                container.style.cursor = 'grabbing';
+                handlePointer(e);
+                ledPointLight.intensity = currentTheme === 'cerah' ? 2.5 : 4.0;
+            } else {
+                container.style.cursor = 'all-scroll';
+            }
+        });
+
+        window.addEventListener('pointermove', (e) => {
+            if (isCameraLocked && isDragging) handlePointer(e);
+        });
+
+        window.addEventListener('pointerup', () => {
+            if (isCameraLocked && isDragging) {
+                isDragging = false;
+                container.style.cursor = 'grab';
+                ledPointLight.intensity = currentTheme === 'cerah' ? 1.5 : 2.0;
+            } else if (!isCameraLocked) {
+                container.style.cursor = 'grab';
+            }
+        });
+        container.style.cursor = 'grab';
+
+        // --- ANIMASI & RENDER LOOP ---
+        updateColorFromAngle(0);
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            currentAngle += (targetAngle - currentAngle) * 0.15;
+            knobGroup.rotation.z = currentAngle;
+
+            ledPointLight.position.x = Math.cos(currentAngle + Math.PI/2) * 1.6;
+            ledPointLight.position.y = Math.sin(currentAngle + Math.PI/2) * 1.6;
+
+            if (!isCameraLocked) controls.update();
+
+            const time = clock.getElapsedTime();
+            if (!isDragging || !isCameraLocked) {
+                let baseIntensity = currentTheme === 'cerah' ? 2.0 : 3.0;
+                emissiveMat.emissiveIntensity = baseIntensity + Math.sin(time * 3) * 0.5;
+            } else {
+                emissiveMat.emissiveIntensity = currentTheme === 'cerah' ? 3.0 : 4.5;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        const resizeObserver = new ResizeObserver(() => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+        resizeObserver.observe(container);
+
+        animate();
+    </script>
+</body>
+</html>

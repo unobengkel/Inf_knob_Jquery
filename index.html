@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Infinite Knob - Pure Canvas</title>
+
+    <!-- Knob Widget CSS -->
+    <link rel="stylesheet" href="asset/knob/knob.css">
+
+    <!-- Main App CSS -->
+    <link rel="stylesheet" href="asset/web/main.css">
+</head>
+<body>
+
+    <h1>♾️ Infinite Knob</h1>
+    <p class="subtitle">Pure Canvas — inspired by jqxKnob</p>
+
+    <div class="demo-container">
+        <!-- Knob Container -->
+        <div class="knob-wrap">
+            <div id="knob-container"></div>
+        </div>
+
+        <!-- Controls Panel -->
+        <div class="controls-panel">
+            <label for="value-slider">Nilai</label>
+            <div class="slider-row">
+                <input type="range" id="value-slider" min="0" max="100" value="60">
+                <span class="slider-value" id="slider-value">60</span>
+            </div>
+
+            <!-- Range Info -->
+            <div class="range-info">
+                <span><span class="label">Range:</span> <span class="value" id="range-min">0</span></span>
+                <span><span class="label">Nilai:</span> <span class="value" id="current-value">60</span></span>
+                <span><span class="value" id="range-max">100</span></span>
+            </div>
+
+            <!-- Buttons -->
+            <div class="button-group">
+                <button class="btn-start" id="btn-start">▶ Mulai</button>
+                <button class="btn-stop" id="btn-stop">⏹ Berhenti</button>
+                <button class="btn-reset" id="btn-reset">↺ Reset</button>
+            </div>
+
+            <!-- Status -->
+            <div class="status-info" id="status-text">
+                🔘 Drag pointer untuk mengubah nilai
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="description">
+            <strong>Infinite Knob</strong> — Putar pointer melewati batas 0 atau 100 untuk 
+            <strong>infinite scroll</strong> range nilai. Dibangun dengan <code>Canvas API</code> 
+            murni, tanpa library eksternal. Responsive di HP, tablet, dan PC.
+        </div>
+    </div>
+
+    <footer>Infinite Knob Widget &copy; 2026 &mdash; Vanilla JS + Canvas</footer>
+
+    <!-- Knob Widget JS -->
+    <script src="asset/knob/knob.js"></script>
+
+    <!-- Main App JS -->
+    <script src="asset/web/main.js"></script>
+
+</body>
+</html>
